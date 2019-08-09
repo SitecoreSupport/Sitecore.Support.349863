@@ -2,6 +2,7 @@
 {
     using Sitecore;
     using Sitecore.XA.Feature.Redirects.Pipelines.HttpRequest;
+    using System;
     using System.Web;
 
     public class RedirectMapResolver : Sitecore.XA.Feature.Redirects.Pipelines.HttpRequest.RedirectMapResolver
@@ -17,9 +18,12 @@
             {
                 text += HttpContext.Current.Request.Url.Query;
             }
-            if (!string.IsNullOrEmpty(Context.Site.VirtualFolder))
+            if (!Uri.IsWellFormedUriString(text, UriKind.Absolute))
             {
-                text = StringUtil.EnsurePostfix('/', Context.Site.VirtualFolder) + text.TrimStart('/');
+                if (!string.IsNullOrEmpty(Context.Site.VirtualFolder))
+                {
+                    text = StringUtil.EnsurePostfix('/', Context.Site.VirtualFolder) + text.TrimStart('/');
+                }
             }
             return text;
         }
